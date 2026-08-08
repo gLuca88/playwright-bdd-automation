@@ -30,11 +30,37 @@
         <junit.platform.version>1.14.2</junit.platform.version>
         <assertj.version>3.26.0</assertj.version>
 
+        <!-- Allure -->
+        <allure.version>2.29.1</allure.version>
+        <allure.maven.version>2.12.0</allure.maven.version>
+
         <!-- Maven Plugins -->
         <maven.compiler.version>3.14.1</maven.compiler.version>
         <maven.surefire.version>3.5.5</maven.surefire.version>
 
     </properties>
+
+
+    <!-- ================================================== -->
+    <!-- Dependency Management                              -->
+    <!-- ================================================== -->
+
+    <dependencyManagement>
+
+        <dependencies>
+
+            <!-- Allure BOM -->
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>${allure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
 
 
     <!-- ================================================== -->
@@ -113,12 +139,24 @@
             <scope>test</scope>
         </dependency>
 
+
+        <!-- ================================================== -->
+        <!-- Allure                                             -->
+        <!-- ================================================== -->
+
+        <!-- Cucumber 7 Adapter -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
-    <!-- ================================================== -->
-    <!-- Build                                              -->
-    <!-- ================================================== -->
+    <!-- ====================================================== -->
+    <!-- Build                                                  -->
+    <!-- ====================================================== -->
 
     <build>
 
@@ -131,6 +169,7 @@
                 <version>${maven.compiler.version}</version>
 
                 <configuration>
+
                     <release>${java.version}</release>
 
                     <compilerArgs>
@@ -147,6 +186,43 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
+            </plugin>
+
+
+            <!-- Allure Report -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.maven.version}</version>
+
+                <configuration>
+
+                    <reportVersion>
+                        ${allure.version}
+                    </reportVersion>
+
+                    <resultsDirectory>
+                        ${project.build.directory}/allure-results
+                    </resultsDirectory>
+
+                </configuration>
+
+                <executions>
+
+                    <execution>
+
+                        <id>allure-report</id>
+
+                        <phase>verify</phase>
+
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+
+                    </execution>
+
+                </executions>
+
             </plugin>
 
         </plugins>
