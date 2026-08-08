@@ -1,17 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Project -->
     <groupId>com.gianluca</groupId>
     <artifactId>playwright-bdd-automation</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+
+    <!-- ================================================== -->
+    <!-- Properties                                         -->
+    <!-- ================================================== -->
+
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+
+        <!-- Java -->
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependencies -->
+        <playwright.version>1.62.0</playwright.version>
+        <cucumber.version>7.34.3</cucumber.version>
+        <junit.version>5.14.2</junit.version>
+        <junit.platform.version>1.14.2</junit.platform.version>
+        <assertj.version>3.26.0</assertj.version>
+
+        <!-- Maven Plugins -->
+        <maven.compiler.version>3.14.1</maven.compiler.version>
+        <maven.surefire.version>3.5.5</maven.surefire.version>
+
     </properties>
+
+
+    <!-- ================================================== -->
+    <!-- Dependencies                                       -->
+    <!-- ================================================== -->
+
+    <dependencies>
+
+        <!-- ================================================== -->
+        <!-- Playwright                                         -->
+        <!-- ================================================== -->
+
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
+        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- JUnit 5                                            -->
+        <!-- ================================================== -->
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- Cucumber                                           -->
+        <!-- ================================================== -->
+
+        <!-- Step Definitions -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit Platform Engine -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Dependency Injection -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- ================================================== -->
+        <!-- AssertJ                                            -->
+        <!-- ================================================== -->
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <!-- ================================================== -->
+    <!-- Build                                              -->
+    <!-- ================================================== -->
+
+    <build>
+
+        <plugins>
+
+            <!-- Java Compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+
+                <configuration>
+                    <release>${java.version}</release>
+
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+
+                </configuration>
+
+            </plugin>
+
+
+            <!-- Test Execution -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
+            </plugin>
+
+        </plugins>
+
+    </build>
 
 </project>
