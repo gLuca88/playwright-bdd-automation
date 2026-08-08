@@ -85,3 +85,28 @@ cucumber-report.json
 test-output/
 surefire-reports/
 failsafe-reports/
+
+### Code coverage reports ###
+coverage/
+*.lcov
+jacoco-report/
+
+### Build output ###
+target/classes/
+target/generated-sources/
+target/generated-test-sources/
+
+### Maven local repository ###
+.m2/
+
+### Node/npm (if using npm scripts) ###
+node_modules/
+package-lock.json
+npm-debug.log
+
+### GitHub specific ###
+.github/workflows/cache/
+
+### IDE caches ###
+.cache/
+*.bak
