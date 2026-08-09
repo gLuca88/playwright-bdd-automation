@@ -151,6 +151,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Allure Java API -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-java-commons</artifactId>
+        </dependency>
+
     </dependencies>
 
 
