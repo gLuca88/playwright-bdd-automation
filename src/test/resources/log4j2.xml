@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN">
+
+    <Properties>
+
+        <Property name="LOG_PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+        </Property>
+
+        <Property name="LOG_DIR">
+            target/logs
+        </Property>
+
+        <Property name="SCENARIO_LOG_DIR">
+            target/logs/scenarios
+        </Property>
+
+    </Properties>
+
+
+    <Appenders>
+
+        <!-- ================================================== -->
+        <!-- Console                                            -->
+        <!-- ================================================== -->
+
+        <Console name="Console"
+                 target="SYSTEM_OUT">
+
+            <PatternLayout
+                    pattern="${LOG_PATTERN}"/>
+
+        </Console>
+
+
+        <!-- ================================================== -->
+        <!-- Global execution log                               -->
+        <!-- ================================================== -->
+
+        <File name="GlobalFile"
+              fileName="${LOG_DIR}/automation.log"
+              append="false">
+
+            <PatternLayout
+                    pattern="${LOG_PATTERN}"/>
+
+        </File>
+
+
+        <!-- ================================================== -->
+        <!-- Scenario logs                                      -->
+        <!-- ================================================== -->
+
+        <Routing name="ScenarioRouting">
+
+            <Routes pattern="$${ctx:scenario}">
+
+                <Route>
+
+                    <File
+                            name="ScenarioLog"
+                            fileName="target/logs/scenarios/${ctx:scenario}.log"
+                            append="false">
+
+                        <PatternLayout
+                                pattern="${LOG_PATTERN}"/>
+
+                    </File>
+
+                </Route>
+
+            </Routes>
+
+        </Routing>
+
+    </Appenders>
+
+
+    <Loggers>
+
+        <Root level="info">
+
+            <AppenderRef ref="Console"/>
+
+            <AppenderRef ref="GlobalFile"/>
+
+            <AppenderRef ref="ScenarioRouting"/>
+
+        </Root>
+
+    </Loggers>
+
+</Configuration>
