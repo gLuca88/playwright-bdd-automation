@@ -29,6 +29,7 @@
         <junit.version>5.14.2</junit.version>
         <junit.platform.version>1.14.2</junit.platform.version>
         <assertj.version>3.26.0</assertj.version>
+        <log4j.version>2.25.1</log4j.version>
 
         <!-- Allure -->
         <allure.version>2.29.1</allure.version>
@@ -155,6 +156,18 @@
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-java-commons</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
 
     </dependencies>
