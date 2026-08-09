@@ -12,4 +12,6 @@ public interface IReportManager {
     void attachTrace(Path tracePath);
 
     void attachVideo(Path videoPath);
+
+    void attachLog(Path logPath);
 }

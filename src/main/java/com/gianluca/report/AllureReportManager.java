@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 public class AllureReportManager implements IReportManager {
 
     @Override
@@ -36,6 +37,15 @@ public class AllureReportManager implements IReportManager {
                 "Playwright Video",
                 "video/webm",
                 videoPath
+        );
+    }
+
+    @Override
+    public void attachLog(Path logPath) {
+        attach(
+                "Execution Log",
+                "text/plain",
+                logPath
         );
     }
 
