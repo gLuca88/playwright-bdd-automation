@@ -5,6 +5,7 @@ import com.gianluca.artifact.PlaywrightArtifactManager;
 import com.gianluca.context.TestContext;
 import com.gianluca.factory.PlaywrightFactory;
 import com.gianluca.logging.LoggerUtil;
+import com.gianluca.pages.PageManager;
 import com.gianluca.report.AllureReportManager;
 import com.gianluca.report.IReportManager;
 import com.microsoft.playwright.*;
@@ -60,11 +61,14 @@ public class Hooks {
 
         Page page =
                 PlaywrightFactory.createPage(browserContext);
+        PageManager pageManager =
+                new PageManager(page);
 
         testContext.setPlaywright(playwright);
         testContext.setBrowser(browser);
         testContext.setBrowserContext(browserContext);
         testContext.setPage(page);
+        testContext.setPageManager(pageManager);
 
         artifactManager.startTrace(
                 browserContext

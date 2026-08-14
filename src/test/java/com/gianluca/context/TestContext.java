@@ -1,5 +1,6 @@
 package com.gianluca.context;
 
+import com.gianluca.pages.PageManager;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
@@ -11,6 +12,7 @@ public class TestContext {
     private Browser browser;
     private BrowserContext browserContext;
     private Page page;
+    private PageManager pageManager;
 
     public Playwright getPlaywright() {
         return playwright;
@@ -44,11 +46,20 @@ public class TestContext {
         this.page = page;
     }
 
+    public PageManager getPageManager() {
+        return pageManager;
+    }
+
+    public void setPageManager(PageManager pageManager) {
+        this.pageManager = pageManager;
+    }
+
     public void clear() {
         playwright = null;
         browser = null;
         browserContext = null;
         page = null;
+        pageManager = null;
     }
 }
 

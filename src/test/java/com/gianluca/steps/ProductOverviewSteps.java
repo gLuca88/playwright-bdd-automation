@@ -17,11 +17,37 @@ public class ProductOverviewSteps extends BaseSteps {
     private static final Logger logger =
             LoggerUtil.getLogger(ProductOverviewSteps.class);
 
-    private String urlProdottoSelezionato;
+    private HomePage homePage;
+    private ProductDetailPage productDetailPage;
 
+    private String urlProdottoSelezionato;
 
     public ProductOverviewSteps(TestContext testContext) {
         super(testContext);
+    }
+
+
+    // =========================
+    // PAGE OBJECTS
+    // =========================
+
+    private HomePage homePage() {
+
+        if (homePage == null) {
+            homePage = getPageManager().homePage();
+        }
+
+        return homePage;
+    }
+
+    private ProductDetailPage productDetailPage() {
+
+        if (productDetailPage == null) {
+            productDetailPage =
+                    getPageManager().productDetailPage();
+        }
+
+        return productDetailPage;
     }
 
 
@@ -32,15 +58,12 @@ public class ProductOverviewSteps extends BaseSteps {
     @Then("viene visualizzata la griglia dei prodotti")
     public void verificaPresenzaGriglia() {
 
-        HomePage homePage =
-                new HomePage(page());
-
         logger.info(
                 "Verifica presenza griglia prodotti"
         );
 
         boolean result =
-                homePage.verificaPresenzaGriglia();
+                homePage().verificaPresenzaGrigliaProdotti();
 
         assertTrue(
                 result,
@@ -48,7 +71,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         logger.info(
-                "Griglia prodotti presente - RESULT: {}",
+                "Griglia prodotti visualizzata correttamente - RESULT: {}",
                 result
         );
     }
@@ -57,15 +80,15 @@ public class ProductOverviewSteps extends BaseSteps {
     @And("viene visualizzato almeno un prodotto")
     public void verificaPresenzaProdotti() {
 
-        HomePage homePage = new HomePage(page());
-
-        logger.info("Verifica presenza prodotti nel catalogo");
+        logger.info(
+                "Verifica presenza prodotti nel catalogo"
+        );
 
         boolean result =
-                homePage.verificaNumeroMinimoProdotti(1);
+                homePage().verificaNumeroMinimoProdotti(1);
 
         int numeroProdotti =
-                homePage.getNumeroProdotti();
+                homePage().getNumeroProdotti();
 
         assertTrue(
                 result,
@@ -83,15 +106,15 @@ public class ProductOverviewSteps extends BaseSteps {
     @Given("il catalogo prodotti è visualizzato")
     public void verificaCatalogoProdottiVisualizzato() {
 
-        HomePage homePage = new HomePage(page());
-
-        logger.info("Verifica presenza catalogo prodotti");
+        logger.info(
+                "Verifica presenza catalogo prodotti"
+        );
 
         boolean result =
-                homePage.verificaNumeroMinimoProdotti(1);
+                homePage().verificaNumeroMinimoProdotti(1);
 
         int numeroProdotti =
-                homePage.getNumeroProdotti();
+                homePage().getNumeroProdotti();
 
         assertTrue(
                 result,
@@ -113,10 +136,8 @@ public class ProductOverviewSteps extends BaseSteps {
     @Then("ogni prodotto visualizza un'immagine")
     public void verificaImmagineProdotti() {
 
-        HomePage homePage = new HomePage(page());
-
         int numeroProdotti =
-                homePage.getNumeroProdotti();
+                homePage().getNumeroProdotti();
 
         logger.info(
                 "Verifica immagine su {} prodotti",
@@ -124,7 +145,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage.verificaImmaginePerOgniProdotto();
+                homePage().verificaImmaginePerOgniProdotto();
 
         assertTrue(
                 result,
@@ -132,7 +153,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         logger.info(
-                "Immagine verificata correttamente su tutti i {} prodotti - RESULT: {}",
+                "Immagini verificate correttamente su tutti i {} prodotti - RESULT: {}",
                 numeroProdotti,
                 result
         );
@@ -142,10 +163,8 @@ public class ProductOverviewSteps extends BaseSteps {
     @And("ogni prodotto visualizza il nome")
     public void verificaNomeProdotti() {
 
-        HomePage homePage = new HomePage(page());
-
         int numeroProdotti =
-                homePage.getNumeroProdotti();
+                homePage().getNumeroProdotti();
 
         logger.info(
                 "Verifica nome su {} prodotti",
@@ -153,7 +172,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage.verificaNomePerOgniProdotto();
+                homePage().verificaNomePerOgniProdotto();
 
         assertTrue(
                 result,
@@ -171,10 +190,8 @@ public class ProductOverviewSteps extends BaseSteps {
     @And("ogni prodotto visualizza il prezzo")
     public void verificaPrezzoProdotti() {
 
-        HomePage homePage = new HomePage(page());
-
         int numeroProdotti =
-                homePage.getNumeroProdotti();
+                homePage().getNumeroProdotti();
 
         logger.info(
                 "Verifica prezzo su {} prodotti",
@@ -182,7 +199,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage.verificaPrezzoPerOgniProdotto();
+                homePage().verificaPrezzoPerOgniProdotto();
 
         assertTrue(
                 result,
@@ -204,15 +221,12 @@ public class ProductOverviewSteps extends BaseSteps {
     @When("il visitatore seleziona un prodotto")
     public void selezionaProdotto() {
 
-        HomePage homePage =
-                new HomePage(page());
-
         logger.info(
                 "Selezione di un prodotto dal catalogo"
         );
 
         urlProdottoSelezionato =
-                homePage.selezionaProdotto();
+                homePage().selezionaProdotto();
 
         logger.info(
                 "Prodotto selezionato con URL: {}",
@@ -224,16 +238,13 @@ public class ProductOverviewSteps extends BaseSteps {
     @Then("viene visualizzata la pagina di dettaglio del prodotto selezionato")
     public void verificaPaginaDettaglioProdotto() {
 
-        ProductDetailPage productDetailPage =
-                new ProductDetailPage(page());
-
         logger.info(
                 "Verifica navigazione alla pagina prodotto: {}",
                 urlProdottoSelezionato
         );
 
         boolean result =
-                productDetailPage.verificaUrlProdotto(
+                productDetailPage().verificaUrlProdotto(
                         urlProdottoSelezionato
                 );
 
@@ -248,4 +259,3 @@ public class ProductOverviewSteps extends BaseSteps {
         );
     }
 }
-

@@ -1,6 +1,7 @@
 package com.gianluca.steps;
 
 import com.gianluca.context.TestContext;
+import com.gianluca.pages.PageManager;
 import com.microsoft.playwright.Page;
 
 public abstract class BaseSteps {
@@ -13,6 +14,10 @@ public abstract class BaseSteps {
 
     protected Page page() {
         return testContext.getPage();
+    }
+
+    protected PageManager getPageManager() {
+        return testContext.getPageManager();
     }
 
 }
