@@ -3,7 +3,6 @@ package com.gianluca.pages;
 import com.gianluca.config.ConfigReader;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Response;
 
 public class HomePage {
 
@@ -35,7 +34,7 @@ public class HomePage {
 
         String url = ConfigReader.get("base.url");
 
-        Response productsResponse = page.waitForResponse(
+        page.waitForResponse(
                 currentResponse ->
                         currentResponse.url().equals(
                                 "https://api.practicesoftwaretesting.com/products"
@@ -64,8 +63,6 @@ public class HomePage {
         cards().first().waitFor();
 
         int numeroProdotti = cards().count();
-
-        System.out.println("Numero prodotti trovati: " + numeroProdotti);
 
         return numeroProdotti >= numeroMinimo;
     }
