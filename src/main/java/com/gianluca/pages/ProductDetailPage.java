@@ -1,6 +1,5 @@
 package com.gianluca.pages;
 
-
 import com.microsoft.playwright.Page;
 
 public class ProductDetailPage {
@@ -12,7 +11,12 @@ public class ProductDetailPage {
     }
 
 
+    // =========================
+    // PRODUCT DETAIL
+    // =========================
+
     public boolean verificaUrlProdotto(String urlProdotto) {
+
         return page.url().endsWith(urlProdotto);
     }
 }

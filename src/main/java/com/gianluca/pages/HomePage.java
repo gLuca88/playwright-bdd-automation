@@ -17,12 +17,28 @@ public class HomePage {
     // LOCATORS
     // =========================
 
+    private static final String SELETTORE_GRIGLIA_PRODOTTI =
+            ".col-md-9 > .container";
+
+    private static final String SELETTORE_CARD_PRODOTTO =
+            ".card";
+
+    private static final String TEST_ID_NOME_PRODOTTO =
+            "product-name";
+
+    private static final String TEST_ID_PREZZO_PRODOTTO =
+            "product-price";
+
+    private static final String SELETTORE_IMMAGINE_PRODOTTO =
+            "img.card-img-top";
+
+
     private Locator grigliaProdotti() {
-        return page.locator(".col-md-9 > .container");
+        return page.locator(SELETTORE_GRIGLIA_PRODOTTI);
     }
 
-    private Locator cards() {
-        return page.locator(".card");
+    private Locator cardProdotti() {
+        return page.locator(SELETTORE_CARD_PRODOTTO);
     }
 
 
@@ -49,20 +65,23 @@ public class HomePage {
     // PRODUCT OVERVIEW
     // =========================
 
-    public boolean verificaPresenzaGriglia() {
+    public boolean verificaPresenzaGrigliaProdotti() {
+
         grigliaProdotti().waitFor();
+
         return grigliaProdotti().isVisible();
     }
 
     public int getNumeroProdotti() {
-        return cards().count();
+
+        return cardProdotti().count();
     }
 
     public boolean verificaNumeroMinimoProdotti(int numeroMinimo) {
 
-        cards().first().waitFor();
+        cardProdotti().first().waitFor();
 
-        int numeroProdotti = cards().count();
+        int numeroProdotti = cardProdotti().count();
 
         return numeroProdotti >= numeroMinimo;
     }
@@ -74,81 +93,55 @@ public class HomePage {
 
     public boolean verificaImmaginePerOgniProdotto() {
 
-        for (Locator card : cards().all()) {
+        for (Locator cardProdotto : cardProdotti().all()) {
 
-            Locator image =
-                    card.locator("img.card-img-top");
+            Locator immagine =
+                    cardProdotto.locator(SELETTORE_IMMAGINE_PRODOTTO);
 
             page.waitForCondition(
-                    () -> ((Number) image.evaluate(
+                    () -> ((Number) immagine.evaluate(
                             "img => img.naturalWidth"
                     )).intValue() > 0
             );
 
             String src =
-                    image.getAttribute("src");
+                    immagine.getAttribute("src");
 
             if (src == null || src.trim().isEmpty()) {
                 return false;
             }
 
-            int naturalWidth = ((Number) image.evaluate(
-                    "img => img.naturalWidth"
-            )).intValue();
+            int larghezzaNaturale =
+                    ((Number) immagine.evaluate(
+                            "img => img.naturalWidth"
+                    )).intValue();
 
-            if (naturalWidth <= 0) {
+            if (larghezzaNaturale <= 0) {
                 return false;
             }
         }
 
         return true;
     }
-
 
     public boolean verificaNomePerOgniProdotto() {
 
-        for (Locator card : cards().all()) {
-
-            Locator nome = card.getByTestId("product-name");
-
-            if (!nome.isVisible()) {
-                return false;
-            }
-
-            String testoNome = nome.innerText().trim();
-
-            if (testoNome.isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
+        return verificaTestoPerOgniProdotto(
+                TEST_ID_NOME_PRODOTTO
+        );
     }
-
 
     public boolean verificaPrezzoPerOgniProdotto() {
 
-        for (Locator card : cards().all()) {
-
-            Locator prezzo = card.getByTestId("product-price");
-
-            if (!prezzo.isVisible()) {
-                return false;
-            }
-
-            String testoPrezzo = prezzo.innerText().trim();
-
-            if (testoPrezzo.isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
+        return verificaTestoPerOgniProdotto(
+                TEST_ID_PREZZO_PRODOTTO
+        );
     }
 
     public String selezionaProdotto() {
 
-        Locator prodotto = cards().first();
+        Locator prodotto =
+                cardProdotti().first();
 
         prodotto.waitFor();
 
@@ -166,5 +159,32 @@ public class HomePage {
         );
 
         return urlProdotto;
+    }
+
+
+    // =========================
+    // PRIVATE SUPPORT
+    // =========================
+
+    private boolean verificaTestoPerOgniProdotto(String testId) {
+
+        for (Locator cardProdotto : cardProdotti().all()) {
+
+            Locator elemento =
+                    cardProdotto.getByTestId(testId);
+
+            if (!elemento.isVisible()) {
+                return false;
+            }
+
+            String testo =
+                    elemento.innerText().trim();
+
+            if (testo.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
