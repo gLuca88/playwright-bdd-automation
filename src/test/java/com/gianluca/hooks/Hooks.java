@@ -50,6 +50,7 @@ public class Hooks {
 
         Playwright playwright =
                 PlaywrightFactory.createPlaywright();
+        playwright.selectors().setTestIdAttribute("data-test");
 
         Browser browser =
                 PlaywrightFactory.createBrowser(playwright);
