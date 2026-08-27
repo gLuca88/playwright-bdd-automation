@@ -2,8 +2,6 @@ package com.gianluca.steps;
 
 import com.gianluca.context.TestContext;
 import com.gianluca.logging.LoggerUtil;
-import com.gianluca.pages.HomePage;
-import com.gianluca.pages.ProductDetailPage;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -17,37 +15,11 @@ public class ProductOverviewSteps extends BaseSteps {
     private static final Logger logger =
             LoggerUtil.getLogger(ProductOverviewSteps.class);
 
-    private HomePage homePage;
-    private ProductDetailPage productDetailPage;
 
     private String urlProdottoSelezionato;
 
     public ProductOverviewSteps(TestContext testContext) {
         super(testContext);
-    }
-
-
-    // =========================
-    // PAGE OBJECTS
-    // =========================
-
-    private HomePage homePage() {
-
-        if (homePage == null) {
-            homePage = getPageManager().homePage();
-        }
-
-        return homePage;
-    }
-
-    private ProductDetailPage productDetailPage() {
-
-        if (productDetailPage == null) {
-            productDetailPage =
-                    getPageManager().productDetailPage();
-        }
-
-        return productDetailPage;
     }
 
 
@@ -63,7 +35,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage().verificaPresenzaGrigliaProdotti();
+                pages().homePage().verificaPresenzaGrigliaProdotti();
 
         assertTrue(
                 result,
@@ -85,10 +57,10 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage().verificaNumeroMinimoProdotti(1);
+                pages().homePage().verificaNumeroMinimoProdotti(1);
 
         int numeroProdotti =
-                homePage().getNumeroProdotti();
+                pages().homePage().getNumeroProdotti();
 
         assertTrue(
                 result,
@@ -111,10 +83,10 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage().verificaNumeroMinimoProdotti(1);
+                pages().homePage().verificaNumeroMinimoProdotti(1);
 
         int numeroProdotti =
-                homePage().getNumeroProdotti();
+                pages().homePage().getNumeroProdotti();
 
         assertTrue(
                 result,
@@ -137,7 +109,7 @@ public class ProductOverviewSteps extends BaseSteps {
     public void verificaImmagineProdotti() {
 
         int numeroProdotti =
-                homePage().getNumeroProdotti();
+                pages().homePage().getNumeroProdotti();
 
         logger.info(
                 "Verifica immagine su {} prodotti",
@@ -145,7 +117,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage().verificaImmaginePerOgniProdotto();
+                pages().homePage().verificaImmaginePerOgniProdotto();
 
         assertTrue(
                 result,
@@ -164,7 +136,7 @@ public class ProductOverviewSteps extends BaseSteps {
     public void verificaNomeProdotti() {
 
         int numeroProdotti =
-                homePage().getNumeroProdotti();
+                pages().homePage().getNumeroProdotti();
 
         logger.info(
                 "Verifica nome su {} prodotti",
@@ -172,7 +144,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage().verificaNomePerOgniProdotto();
+                pages().homePage().verificaNomePerOgniProdotto();
 
         assertTrue(
                 result,
@@ -191,7 +163,7 @@ public class ProductOverviewSteps extends BaseSteps {
     public void verificaPrezzoProdotti() {
 
         int numeroProdotti =
-                homePage().getNumeroProdotti();
+                pages().homePage().getNumeroProdotti();
 
         logger.info(
                 "Verifica prezzo su {} prodotti",
@@ -199,7 +171,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                homePage().verificaPrezzoPerOgniProdotto();
+                pages().homePage().verificaPrezzoPerOgniProdotto();
 
         assertTrue(
                 result,
@@ -226,7 +198,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         urlProdottoSelezionato =
-                homePage().selezionaProdotto();
+                pages().homePage().selezionaProdotto();
 
         logger.info(
                 "Prodotto selezionato con URL: {}",
@@ -244,7 +216,7 @@ public class ProductOverviewSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaUrlProdotto(
+                pages().productDetailPage().verificaUrlProdotto(
                         urlProdottoSelezionato
                 );
 

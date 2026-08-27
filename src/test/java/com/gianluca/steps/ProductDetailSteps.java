@@ -2,8 +2,6 @@ package com.gianluca.steps;
 
 import com.gianluca.context.TestContext;
 import com.gianluca.logging.LoggerUtil;
-import com.gianluca.pages.HomePage;
-import com.gianluca.pages.ProductDetailPage;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -18,36 +16,11 @@ public class ProductDetailSteps extends BaseSteps {
     private static final Logger logger =
             LoggerUtil.getLogger(ProductDetailSteps.class);
 
-    private HomePage homePage;
-    private ProductDetailPage productDetailPage;
     private String urlProdottoCorrelatoSelezionato;
 
     public ProductDetailSteps(TestContext testContext) {
         super(testContext);
     }
-
-    // =========================
-    // PAGE OBJECTS
-    // =========================
-
-    private HomePage homePage() {
-
-        if (homePage == null) {
-            homePage = getPageManager().homePage();
-        }
-
-        return homePage;
-    }
-
-    private ProductDetailPage productDetailPage() {
-
-        if (productDetailPage == null) {
-            productDetailPage = getPageManager().productDetailPage();
-        }
-
-        return productDetailPage;
-    }
-
 
     // =========================
     // PRODUCT DETAIL
@@ -59,7 +32,7 @@ public class ProductDetailSteps extends BaseSteps {
                 "Navigazione alla pagina di dettaglio di un prodotto"
         );
 
-        homePage().selezionaProdotto();
+        pages().homePage().selezionaProdotto();
 
         logger.info(
                 "Pagina di dettaglio del prodotto caricata"
@@ -74,7 +47,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaImmagineProdotto();
+                pages().productDetailPage().verificaImmagineProdotto();
 
         assertTrue(
                 result,
@@ -95,7 +68,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaNomeProdotto();
+                pages().productDetailPage().verificaNomeProdotto();
 
         assertTrue(
                 result,
@@ -117,7 +90,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaDescrizioneProdotto();
+                pages().productDetailPage().verificaDescrizioneProdotto();
 
         assertTrue(
                 result,
@@ -138,7 +111,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaPrezzoProdotto();
+                pages().productDetailPage().verificaPrezzoProdotto();
 
         assertTrue(
                 result,
@@ -159,7 +132,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaBadgeCategoria();
+                pages().productDetailPage().verificaBadgeCategoria();
 
         assertTrue(
                 result,
@@ -180,7 +153,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaBadgeBrand();
+                pages().productDetailPage().verificaBadgeBrand();
 
         assertTrue(
                 result,
@@ -201,7 +174,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaPresenzaGrigliaProdottiCorrelati();
+                pages().productDetailPage().verificaPresenzaGrigliaProdottiCorrelati();
 
         assertTrue(
                 result,
@@ -222,11 +195,11 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage()
+                pages().productDetailPage()
                         .verificaNumeroMinimoProdottiCorrelati(1);
 
         int numeroProdotti =
-                productDetailPage()
+                pages().productDetailPage()
                         .getNumeroProdottiCorrelati();
 
         assertTrue(
@@ -249,7 +222,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         urlProdottoCorrelatoSelezionato =
-                productDetailPage().selezionaProdottoCorrelato();
+                pages().productDetailPage().selezionaProdottoCorrelato();
 
         logger.info(
                 "Prodotto correlato selezionato con URL: {}",
@@ -266,7 +239,7 @@ public class ProductDetailSteps extends BaseSteps {
         );
 
         boolean result =
-                productDetailPage().verificaUrlProdotto(
+                pages().productDetailPage().verificaUrlProdotto(
                         urlProdottoCorrelatoSelezionato
                 );
 
