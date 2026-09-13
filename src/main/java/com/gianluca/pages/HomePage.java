@@ -3,6 +3,8 @@ package com.gianluca.pages;
 import com.gianluca.config.ConfigReader;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Response;
+import com.microsoft.playwright.options.AriaRole;
 
 public class HomePage {
 
@@ -39,6 +41,24 @@ public class HomePage {
 
     private Locator cardProdotti() {
         return page.locator(SELETTORE_CARD_PRODOTTO);
+    }
+
+    private Locator buttonMenuCategorie() {
+
+        return page.getByRole(
+                AriaRole.BUTTON,
+                new Page.GetByRoleOptions()
+                        .setName("Categories")
+        );
+    }
+
+    private Locator categoriaByName(String nomeCategoria) {
+
+        return page.getByRole(
+                AriaRole.LINK,
+                new Page.GetByRoleOptions()
+                        .setName(nomeCategoria)
+        );
     }
 
 
@@ -81,7 +101,8 @@ public class HomePage {
 
         cardProdotti().first().waitFor();
 
-        int numeroProdotti = cardProdotti().count();
+        int numeroProdotti =
+                cardProdotti().count();
 
         return numeroProdotti >= numeroMinimo;
     }
@@ -96,7 +117,9 @@ public class HomePage {
         for (Locator cardProdotto : cardProdotti().all()) {
 
             Locator immagine =
-                    cardProdotto.locator(SELETTORE_IMMAGINE_PRODOTTO);
+                    cardProdotto.locator(
+                            SELETTORE_IMMAGINE_PRODOTTO
+                    );
 
             page.waitForCondition(
                     () -> ((Number) immagine.evaluate(
@@ -159,6 +182,56 @@ public class HomePage {
         );
 
         return urlProdotto;
+    }
+
+
+    // =========================
+    // CATEGORY NAVIGATION
+    // =========================
+
+    public String selezionaCategoria(String nomeCategoria) {
+
+        buttonMenuCategorie().click();
+
+        Locator categoria =
+                categoriaByName(nomeCategoria);
+
+        String urlCategoria =
+                categoria.getAttribute("href");
+
+        categoria.click();
+
+        page.waitForURL(
+                "**" + urlCategoria
+        );
+
+        return urlCategoria;
+    }
+
+    public Response selezionaCategoriaConResponse(String nomeCategoria) {
+
+        buttonMenuCategorie().click();
+
+        Locator categoria =
+                categoriaByName(nomeCategoria);
+
+        String urlCategoria =
+                categoria.getAttribute("href");
+
+        Response response =
+                page.waitForResponse(
+                        currentResponse ->
+                                currentResponse.url()
+                                        .endsWith("/products")
+                                        && currentResponse.status() == 200,
+                        categoria::click
+                );
+
+        page.waitForURL(
+                "**" + urlCategoria
+        );
+
+        return response;
     }
 
 
