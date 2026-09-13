@@ -9,6 +9,7 @@ public class PageManager {
 
     private HomePage homePage;
     private ProductDetailPage productDetailPage;
+    private CategoryPage categoryPage;
 
     public PageManager(Page page) {
         this.page = page;
@@ -30,5 +31,14 @@ public class PageManager {
         }
 
         return productDetailPage;
+    }
+
+    public CategoryPage categoryPage() {
+
+        if (categoryPage == null) {
+            categoryPage = new CategoryPage(page);
+        }
+
+        return categoryPage;
     }
 }
