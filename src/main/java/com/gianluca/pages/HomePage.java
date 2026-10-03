@@ -34,6 +34,8 @@ public class HomePage {
     private static final String SELETTORE_IMMAGINE_PRODOTTO =
             "img.card-img-top";
 
+    private static final String TEST_ID_CONTATTI = "nav-contact";
+
 
     private Locator grigliaProdotti() {
         return page.locator(SELETTORE_GRIGLIA_PRODOTTI);
@@ -50,6 +52,10 @@ public class HomePage {
                 new Page.GetByRoleOptions()
                         .setName("Categories")
         );
+    }
+
+    private Locator linkContatti() {
+        return page.getByTestId(TEST_ID_CONTATTI);
     }
 
     private Locator categoriaByName(String nomeCategoria) {
@@ -232,6 +238,15 @@ public class HomePage {
         );
 
         return response;
+    }
+
+    // =========================
+    // CONTACT NAVIGATION
+    // =========================
+
+    public void navigaAllaPaginaContatti() {
+        linkContatti().click();
+        page.waitForURL("**/contact");
     }
 
 
