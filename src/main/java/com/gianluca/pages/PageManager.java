@@ -10,6 +10,7 @@ public class PageManager {
     private HomePage homePage;
     private ProductDetailPage productDetailPage;
     private CategoryPage categoryPage;
+    private ContactPage contactPage;
 
     public PageManager(Page page) {
         this.page = page;
@@ -40,5 +41,12 @@ public class PageManager {
         }
 
         return categoryPage;
+    }
+
+    public ContactPage contactPage() {
+        if (contactPage == null) {
+            contactPage = new ContactPage(page);
+        }
+        return contactPage;
     }
 }
