@@ -356,7 +356,7 @@ public class ContactSteps extends BaseSteps {
     public void verificaEsitoValidazioneEmail(String esito) {
 
         logger.info(
-                "Verifica validazione email - Esito atteso: {}",
+                "Verifica esito validazione email - Esito atteso: {}",
                 esito
         );
 
@@ -371,7 +371,7 @@ public class ContactSteps extends BaseSteps {
                             .getErroreEmail();
 
             logger.info(
-                    "Validazione email non valida - Errore visibile: {} - Messaggio: [{}]",
+                    "Validazione email negativa - Errore visibile: {} - Messaggio: {}",
                     erroreVisibile,
                     erroreEmail
             );
@@ -381,30 +381,30 @@ public class ContactSteps extends BaseSteps {
 
                     () -> assertTrue(
                             erroreVisibile,
-                            "L'errore relativo al formato email non è visualizzato"
+                            "L'errore di validazione dell'email non è visibile"
                     ),
 
                     () -> assertEquals(
                             "Email format is invalid",
                             erroreEmail,
-                            "Il messaggio di errore relativo al formato email non è corretto"
+                            "Il messaggio di errore dell'email non è corretto"
                     )
             );
 
         } else if (esito.equals("valida")) {
 
-            boolean erroreAssente =
+            boolean invioRiuscito =
                     pages().contactPage()
-                            .verificaErroreEmailAssente();
+                            .verificaInvioModuloRiuscito();
 
             logger.info(
-                    "Validazione email valida - Errore formato email assente: {}",
-                    erroreAssente
+                    "Validazione email positiva - Invio modulo riuscito: {}",
+                    invioRiuscito
             );
 
             assertTrue(
-                    erroreAssente,
-                    "È stato visualizzato un errore di formato per una email valida"
+                    invioRiuscito,
+                    "Il modulo non è stato inviato con un'email valida"
             );
 
         } else {
@@ -415,7 +415,7 @@ public class ContactSteps extends BaseSteps {
         }
 
         logger.info(
-                "Verifica validazione email completata - Esito atteso: {}",
+                "Verifica esito validazione email completata - Esito atteso: {}",
                 esito
         );
     }
@@ -513,7 +513,7 @@ public class ContactSteps extends BaseSteps {
     public void verificaEsitoValidazioneMessaggio(String esito) {
 
         logger.info(
-                "Verifica validazione messaggio - Esito atteso: {}",
+                "Verifica esito validazione messaggio - Esito atteso: {}",
                 esito
         );
 
@@ -528,7 +528,7 @@ public class ContactSteps extends BaseSteps {
                             .getErroreMessaggio();
 
             logger.info(
-                    "Validazione messaggio non valido - Errore visibile: {} - Messaggio: [{}]",
+                    "Validazione messaggio negativa - Errore visibile: {} - Messaggio: {}",
                     erroreVisibile,
                     erroreMessaggio
             );
@@ -538,30 +538,30 @@ public class ContactSteps extends BaseSteps {
 
                     () -> assertTrue(
                             erroreVisibile,
-                            "L'errore relativo alla lunghezza del messaggio non è visualizzato"
+                            "L'errore di validazione del messaggio non è visibile"
                     ),
 
                     () -> assertEquals(
                             "Message must be minimal 50 characters",
                             erroreMessaggio,
-                            "Il messaggio di errore relativo alla lunghezza minima non è corretto"
+                            "Il messaggio di errore non è corretto"
                     )
             );
 
         } else if (esito.equals("valido")) {
 
-            boolean erroreAssente =
+            boolean invioRiuscito =
                     pages().contactPage()
-                            .verificaErroreMessaggioAssente();
+                            .verificaInvioModuloRiuscito();
 
             logger.info(
-                    "Validazione messaggio valido - Errore lunghezza messaggio assente: {}",
-                    erroreAssente
+                    "Validazione messaggio positiva - Invio modulo riuscito: {}",
+                    invioRiuscito
             );
 
             assertTrue(
-                    erroreAssente,
-                    "È stato visualizzato un errore di lunghezza per un messaggio valido"
+                    invioRiuscito,
+                    "Il modulo non è stato inviato con un messaggio valido"
             );
 
         } else {
@@ -572,7 +572,7 @@ public class ContactSteps extends BaseSteps {
         }
 
         logger.info(
-                "Verifica validazione messaggio completata - Esito atteso: {}",
+                "Verifica esito validazione messaggio completata - Esito atteso: {}",
                 esito
         );
     }

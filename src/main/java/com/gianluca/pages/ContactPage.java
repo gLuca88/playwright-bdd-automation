@@ -154,6 +154,15 @@ public class ContactPage {
         return campoMessaggio().isVisible();
     }
 
+    public boolean verificaInvioModuloRiuscito() {
+
+        Locator conferma = messaggioConferma();
+
+        conferma.waitFor();
+
+        return conferma.isVisible();
+    }
+
 
     // =========================
     // FORM ACTIONS
@@ -202,10 +211,6 @@ public class ContactPage {
         return verificaErroreVisibile(erroreEmail());
     }
 
-    public boolean verificaErroreEmailAssente() {
-        return !erroreEmail().isVisible();
-    }
-
     public boolean verificaErroreSubjectVisibile() {
         return verificaErroreVisibile(erroreSubject());
     }
@@ -213,11 +218,6 @@ public class ContactPage {
     public boolean verificaErroreMessaggioVisibile() {
         return verificaErroreVisibile(erroreMessaggio());
     }
-
-    public boolean verificaErroreMessaggioAssente() {
-        return !erroreMessaggio().isVisible();
-    }
-
 
     public String getErroreNome() {
         return getTestoErrore(erroreNome());
