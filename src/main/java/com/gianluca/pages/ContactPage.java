@@ -123,8 +123,10 @@ public class ContactPage {
     }
 
     public boolean verificaModuloContatti() {
-        moduloContatti().waitFor();
-        return moduloContatti().isVisible();
+        Locator modulo = moduloContatti();
+
+        modulo.waitFor();
+        return modulo.isVisible();
     }
 
 
@@ -189,18 +191,15 @@ public class ContactPage {
     // =========================
 
     public boolean verificaErroreNomeVisibile() {
-        erroreNome().waitFor();
-        return erroreNome().isVisible();
+        return verificaErroreVisibile(erroreNome());
     }
 
     public boolean verificaErroreCognomeVisibile() {
-        erroreCognome().waitFor();
-        return erroreCognome().isVisible();
+        return verificaErroreVisibile(erroreCognome());
     }
 
     public boolean verificaErroreEmailVisibile() {
-        erroreEmail().waitFor();
-        return erroreEmail().isVisible();
+        return verificaErroreVisibile(erroreEmail());
     }
 
     public boolean verificaErroreEmailAssente() {
@@ -208,13 +207,11 @@ public class ContactPage {
     }
 
     public boolean verificaErroreSubjectVisibile() {
-        erroreSubject().waitFor();
-        return erroreSubject().isVisible();
+        return verificaErroreVisibile(erroreSubject());
     }
 
     public boolean verificaErroreMessaggioVisibile() {
-        erroreMessaggio().waitFor();
-        return erroreMessaggio().isVisible();
+        return verificaErroreVisibile(erroreMessaggio());
     }
 
     public boolean verificaErroreMessaggioAssente() {
@@ -223,30 +220,31 @@ public class ContactPage {
 
 
     public String getErroreNome() {
-        return getTestoErrore(TEST_ID_ERRORE_NOME);
+        return getTestoErrore(erroreNome());
     }
 
     public String getErroreCognome() {
-        return getTestoErrore(TEST_ID_ERRORE_COGNOME);
+        return getTestoErrore(erroreCognome());
     }
 
     public String getErroreEmail() {
-        return getTestoErrore(TEST_ID_ERRORE_EMAIL);
+        return getTestoErrore(erroreEmail());
     }
 
     public String getErroreSubject() {
-        return getTestoErrore(TEST_ID_ERRORE_SUBJECT);
+        return getTestoErrore(erroreSubject());
     }
 
     public String getErroreMessaggio() {
-        return getTestoErrore(TEST_ID_ERRORE_MESSAGGIO);
+        return getTestoErrore(erroreMessaggio());
     }
 
     public String getMessaggioConferma() {
-        messaggioConferma().waitFor();
+        Locator messaggio = messaggioConferma();
 
-        return messaggioConferma()
-                .innerText()
+        messaggio.waitFor();
+
+        return messaggio.innerText()
                 .trim();
     }
 
@@ -267,9 +265,13 @@ public class ContactPage {
     // PRIVATE METHODS
     // =========================
 
-    private String getTestoErrore(String testIdErrore) {
-        return page.getByTestId(testIdErrore)
-                .innerText()
+    private String getTestoErrore(Locator errore) {
+        return errore.innerText()
                 .trim();
+    }
+
+    private boolean verificaErroreVisibile(Locator errore) {
+        errore.waitFor();
+        return errore.isVisible();
     }
 }

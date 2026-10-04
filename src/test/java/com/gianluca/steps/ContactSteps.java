@@ -72,14 +72,18 @@ public class ContactSteps extends BaseSteps {
                 moduloVisibile
         );
 
-        assertTrue(
-                urlCorretta,
-                "La pagina visualizzata non corrisponde alla pagina dei contatti"
-        );
+        assertAll(
+                "Verifica pagina dei contatti",
 
-        assertTrue(
-                moduloVisibile,
-                "Il modulo di contatto non è visualizzato"
+                () -> assertTrue(
+                        urlCorretta,
+                        "La pagina visualizzata non corrisponde alla pagina dei contatti"
+                ),
+
+                () -> assertTrue(
+                        moduloVisibile,
+                        "Il modulo di contatto non è visualizzato"
+                )
         );
 
         logger.info(
@@ -92,7 +96,9 @@ public class ContactSteps extends BaseSteps {
     @Then("vengono visualizzati tutti i campi obbligatori del modulo di contatto")
     public void verificaVisualizzazioneCampiObbligatori() {
 
-        logger.info("Verifica visualizzazione dei campi obbligatori del modulo di contatto");
+        logger.info(
+                "Verifica visualizzazione dei campi obbligatori del modulo di contatto"
+        );
 
         boolean nomeVisibile =
                 pages().contactPage()
@@ -123,29 +129,33 @@ public class ContactSteps extends BaseSteps {
                 messaggioVisibile
         );
 
-        assertTrue(
-                nomeVisibile,
-                "Il campo nome non è visualizzato"
-        );
+        assertAll(
+                "Verifica visualizzazione campi obbligatori",
 
-        assertTrue(
-                cognomeVisibile,
-                "Il campo cognome non è visualizzato"
-        );
+                () -> assertTrue(
+                        nomeVisibile,
+                        "Il campo nome non è visualizzato"
+                ),
 
-        assertTrue(
-                emailVisibile,
-                "Il campo email non è visualizzato"
-        );
+                () -> assertTrue(
+                        cognomeVisibile,
+                        "Il campo cognome non è visualizzato"
+                ),
 
-        assertTrue(
-                subjectVisibile,
-                "Il campo subject non è visualizzato"
-        );
+                () -> assertTrue(
+                        emailVisibile,
+                        "Il campo email non è visualizzato"
+                ),
 
-        assertTrue(
-                messaggioVisibile,
-                "Il campo messaggio non è visualizzato"
+                () -> assertTrue(
+                        subjectVisibile,
+                        "Il campo subject non è visualizzato"
+                ),
+
+                () -> assertTrue(
+                        messaggioVisibile,
+                        "Il campo messaggio non è visualizzato"
+                )
         );
 
         logger.info(
@@ -195,7 +205,6 @@ public class ContactSteps extends BaseSteps {
                 pages().contactPage()
                         .verificaErroreMessaggioVisibile();
 
-
         String erroreNome =
                 pages().contactPage()
                         .getErroreNome();
@@ -216,7 +225,6 @@ public class ContactSteps extends BaseSteps {
                 pages().contactPage()
                         .getErroreMessaggio();
 
-
         logger.info(
                 "Errori campi obbligatori - Nome: [{}] - Cognome: [{}] - Email: [{}] - Subject: [{}] - Messaggio: [{}]",
                 erroreNome,
@@ -226,63 +234,65 @@ public class ContactSteps extends BaseSteps {
                 erroreMessaggio
         );
 
+        assertAll(
+                "Verifica errori dei campi obbligatori",
 
-        // Verifica visualizzazione degli alert
-        assertTrue(
-                erroreNomeVisibile,
-                "L'errore del campo First name non è visualizzato"
-        );
+                // Verifica visualizzazione degli alert
+                () -> assertTrue(
+                        erroreNomeVisibile,
+                        "L'errore del campo First name non è visualizzato"
+                ),
 
-        assertTrue(
-                erroreCognomeVisibile,
-                "L'errore del campo Last name non è visualizzato"
-        );
+                () -> assertTrue(
+                        erroreCognomeVisibile,
+                        "L'errore del campo Last name non è visualizzato"
+                ),
 
-        assertTrue(
-                erroreEmailVisibile,
-                "L'errore del campo Email non è visualizzato"
-        );
+                () -> assertTrue(
+                        erroreEmailVisibile,
+                        "L'errore del campo Email non è visualizzato"
+                ),
 
-        assertTrue(
-                erroreSubjectVisibile,
-                "L'errore del campo Subject non è visualizzato"
-        );
+                () -> assertTrue(
+                        erroreSubjectVisibile,
+                        "L'errore del campo Subject non è visualizzato"
+                ),
 
-        assertTrue(
-                erroreMessaggioVisibile,
-                "L'errore del campo Message non è visualizzato"
-        );
+                () -> assertTrue(
+                        erroreMessaggioVisibile,
+                        "L'errore del campo Message non è visualizzato"
+                ),
 
+                // Verifica testo degli alert
+                () -> assertEquals(
+                        "First name is required",
+                        erroreNome,
+                        "Il testo dell'errore del campo First name non è corretto"
+                ),
 
-        // Verifica testo degli alert
-        assertEquals(
-                "First name is required",
-                erroreNome,
-                "Il testo dell'errore del campo First name non è corretto"
-        );
+                () -> assertEquals(
+                        "Last name is required",
+                        erroreCognome,
+                        "Il testo dell'errore del campo Last name non è corretto"
+                ),
 
-        assertEquals(
-                "Last name is required",
-                erroreCognome,
-                "Il testo dell'errore del campo Last name non è corretto"
-        );
+                () -> assertEquals(
+                        "Email is required",
+                        erroreEmail,
+                        "Il testo dell'errore del campo Email non è corretto"
+                ),
 
-        assertEquals(
-                "Email is required",
-                erroreEmail,
-                "Il testo dell'errore del campo Email non è corretto"
-        );
+                () -> assertEquals(
+                        "Subject is required",
+                        erroreSubject,
+                        "Il testo dell'errore del campo Subject non è corretto"
+                ),
 
-        assertEquals(
-                "Subject is required",
-                erroreSubject,
-                "Il testo dell'errore del campo Subject non è corretto"
-        );
-
-        assertEquals(
-                "Message is required",
-                erroreMessaggio,
-                "Il testo dell'errore del campo Message non è corretto"
+                () -> assertEquals(
+                        "Message is required",
+                        erroreMessaggio,
+                        "Il testo dell'errore del campo Message non è corretto"
+                )
         );
 
         logger.info(
@@ -366,15 +376,19 @@ public class ContactSteps extends BaseSteps {
                     erroreEmail
             );
 
-            assertTrue(
-                    erroreVisibile,
-                    "L'errore relativo al formato email non è visualizzato"
-            );
+            assertAll(
+                    "Verifica errore validazione email",
 
-            assertEquals(
-                    "Email format is invalid",
-                    erroreEmail,
-                    "Il messaggio di errore relativo al formato email non è corretto"
+                    () -> assertTrue(
+                            erroreVisibile,
+                            "L'errore relativo al formato email non è visualizzato"
+                    ),
+
+                    () -> assertEquals(
+                            "Email format is invalid",
+                            erroreEmail,
+                            "Il messaggio di errore relativo al formato email non è corretto"
+                    )
             );
 
         } else if (esito.equals("valida")) {
@@ -391,6 +405,12 @@ public class ContactSteps extends BaseSteps {
             assertTrue(
                     erroreAssente,
                     "È stato visualizzato un errore di formato per una email valida"
+            );
+
+        } else {
+
+            fail(
+                    "Esito della validazione email non gestito: " + esito
             );
         }
 
@@ -513,15 +533,19 @@ public class ContactSteps extends BaseSteps {
                     erroreMessaggio
             );
 
-            assertTrue(
-                    erroreVisibile,
-                    "L'errore relativo alla lunghezza del messaggio non è visualizzato"
-            );
+            assertAll(
+                    "Verifica errore validazione messaggio",
 
-            assertEquals(
-                    "Message must be minimal 50 characters",
-                    erroreMessaggio,
-                    "Il messaggio di errore relativo alla lunghezza minima non è corretto"
+                    () -> assertTrue(
+                            erroreVisibile,
+                            "L'errore relativo alla lunghezza del messaggio non è visualizzato"
+                    ),
+
+                    () -> assertEquals(
+                            "Message must be minimal 50 characters",
+                            erroreMessaggio,
+                            "Il messaggio di errore relativo alla lunghezza minima non è corretto"
+                    )
             );
 
         } else if (esito.equals("valido")) {
