@@ -12,14 +12,25 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.gianluca.data.ContactTestData;
+import com.gianluca.utils.JsonDataReader;
+
 public class ContactSteps extends BaseSteps {
 
     private static final Logger logger =
             LoggerUtil.getLogger(ContactSteps.class);
 
+    private final ContactTestData datiContatto =
+            JsonDataReader.read(
+                    "testdata/contact-data.json",
+                    ContactTestData.class
+            );
+
+
     public ContactSteps(TestContext testContext) {
         super(testContext);
     }
+
 
     // =========================
     // CONTACT NAVIGATION
@@ -305,22 +316,16 @@ public class ContactSteps extends BaseSteps {
 
         logger.info("Compilazione degli altri campi obbligatori con dati validi");
 
-        String nome = "Test";
-        String cognome = "User";
-        String subject = "Customer service";
-        String messaggio =
-                "This is a valid test message used to verify the contact form submission.";
-
-        pages().contactPage().compilaNome(nome);
-        pages().contactPage().compilaCognome(cognome);
-        pages().contactPage().selezionaSubject(subject);
-        pages().contactPage().compilaMessaggio(messaggio);
+        pages().contactPage().compilaNome(datiContatto.nome());
+        pages().contactPage().compilaCognome(datiContatto.cognome());
+        pages().contactPage().selezionaSubject(datiContatto.subject());
+        pages().contactPage().compilaMessaggio(datiContatto.messaggio());
 
         logger.info(
                 "Campi obbligatori compilati - Nome: {} - Cognome: {} - Subject: {}",
-                nome,
-                cognome,
-                subject
+                datiContatto.nome(),
+                datiContatto.cognome(),
+                datiContatto.subject()
         );
     }
 
@@ -425,15 +430,6 @@ public class ContactSteps extends BaseSteps {
 
         logger.info("Verifica delle opzioni disponibili nel Subject");
 
-        List<String> opzioniAttese = List.of(
-                "Customer service",
-                "Webmaster",
-                "Return",
-                "Payments",
-                "Warranty",
-                "Status of order"
-        );
-
         List<String> opzioniEffettive =
                 pages().contactPage()
                         .getOpzioniSubject();
@@ -450,12 +446,12 @@ public class ContactSteps extends BaseSteps {
 
         logger.info(
                 "Opzioni Subject attese: {} - Opzioni Subject effettive: {}",
-                opzioniAttese,
+                datiContatto.opzioniSubjectAttese(),
                 opzioniSubject
         );
 
         assertEquals(
-                opzioniAttese,
+                datiContatto.opzioniSubjectAttese(),
                 opzioniSubject,
                 "Le opzioni del Subject non corrispondono a quelle previste"
         );
@@ -471,22 +467,17 @@ public class ContactSteps extends BaseSteps {
                 "Compilazione dei campi obbligatori escluso il messaggio con dati validi"
         );
 
-        String nome = "Test";
-        String cognome = "User";
-        String email = "testuser@example.com";
-        String subject = "Customer service";
-
-        pages().contactPage().compilaNome(nome);
-        pages().contactPage().compilaCognome(cognome);
-        pages().contactPage().compilaEmail(email);
-        pages().contactPage().selezionaSubject(subject);
+        pages().contactPage().compilaNome(datiContatto.nome());
+        pages().contactPage().compilaCognome(datiContatto.cognome());
+        pages().contactPage().compilaEmail(datiContatto.email());
+        pages().contactPage().selezionaSubject(datiContatto.subject());
 
         logger.info(
                 "Campi obbligatori compilati - Nome: {} - Cognome: {} - Email: {} - Subject: {}",
-                nome,
-                cognome,
-                email,
-                subject
+                datiContatto.nome(),
+                datiContatto.cognome(),
+                datiContatto.email(),
+                datiContatto.subject()
         );
     }
 
@@ -584,25 +575,18 @@ public class ContactSteps extends BaseSteps {
                 "Compilazione di tutti i campi obbligatori con dati validi"
         );
 
-        String nome = "Test";
-        String cognome = "User";
-        String email = "testuser@example.com";
-        String subject = "Customer service";
-        String messaggio =
-                "This is a valid test message used to verify the contact form submission.";
-
-        pages().contactPage().compilaNome(nome);
-        pages().contactPage().compilaCognome(cognome);
-        pages().contactPage().compilaEmail(email);
-        pages().contactPage().selezionaSubject(subject);
-        pages().contactPage().compilaMessaggio(messaggio);
+        pages().contactPage().compilaNome(datiContatto.nome());
+        pages().contactPage().compilaCognome(datiContatto.cognome());
+        pages().contactPage().compilaEmail(datiContatto.email());
+        pages().contactPage().selezionaSubject(datiContatto.subject());
+        pages().contactPage().compilaMessaggio(datiContatto.messaggio());
 
         logger.info(
                 "Tutti i campi obbligatori compilati - Nome: {} - Cognome: {} - Email: {} - Subject: {}",
-                nome,
-                cognome,
-                email,
-                subject
+                datiContatto.nome(),
+                datiContatto.cognome(),
+                datiContatto.email(),
+                datiContatto.subject()
         );
     }
 
