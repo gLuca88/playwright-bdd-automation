@@ -1,0 +1,16 @@
+{
+  "nome": "Test",
+  "cognome": "User",
+  "email": "testuser@example.com",
+  "subject": "Customer service",
+  "messaggio": "This is a valid test message used to verify the contact form submission.",
+
+  "opzioniSubjectAttese": [
+    "Customer service",
+    "Webmaster",
+    "Return",
+    "Payments",
+    "Warranty",
+    "Status of order"
+  ]
+}
