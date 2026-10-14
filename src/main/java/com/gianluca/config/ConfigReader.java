@@ -3,6 +3,8 @@ package com.gianluca.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Locale;
+import java.net.URI;
 
 public final class ConfigReader {
 
@@ -16,8 +18,11 @@ public final class ConfigReader {
     }
 
     private static void loadProperties() {
+        PROPERTIES.putAll(loadProperties(System.getProperty("env", "qa")));
+    }
 
-        String environment = System.getProperty("env", "qa");
+    static Properties loadProperties(String environment) {
+        Properties properties = new Properties();
         String fileName = "config-" + environment + ".properties";
 
         try (InputStream inputStream =
@@ -31,7 +36,8 @@ public final class ConfigReader {
                 );
             }
 
-            PROPERTIES.load(inputStream);
+            properties.load(inputStream);
+            return properties;
 
         } catch (IOException e) {
             throw new IllegalStateException(
@@ -43,7 +49,7 @@ public final class ConfigReader {
 
     public static String get(String key) {
 
-        String value = PROPERTIES.getProperty(key);
+        String value = System.getProperty(key, PROPERTIES.getProperty(key));
 
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(
@@ -55,7 +61,7 @@ public final class ConfigReader {
     }
 
     public static String get(String key, String defaultValue) {
-        String value = PROPERTIES.getProperty(key);
+        String value = System.getProperty(key, PROPERTIES.getProperty(key));
         return (value == null || value.isBlank()) ? defaultValue : value.trim();
     }
 
@@ -84,6 +90,25 @@ public final class ConfigReader {
         }
 
         return Boolean.parseBoolean(value);
+    }
+
+    public static void validate() {
+        String browser = get("browser.name").toLowerCase(Locale.ROOT);
+        if (!java.util.Set.of("chromium", "firefox", "webkit").contains(browser)) {
+            throw new IllegalArgumentException("Browser non supportato: " + browser);
+        }
+        if (getInt("browser.timeout") <= 0) {
+            throw new IllegalArgumentException("browser.timeout deve essere maggiore di zero");
+        }
+        getBoolean("browser.headless");
+        getBoolean("playwright.trace.enabled");
+        getBoolean("playwright.video.enabled");
+        getBoolean("playwright.screenshot.enabled");
+        URI baseUrl = URI.create(get("base.url"));
+        if (baseUrl.getHost() == null || !("https".equalsIgnoreCase(baseUrl.getScheme())
+                || "http".equalsIgnoreCase(baseUrl.getScheme()))) {
+            throw new IllegalArgumentException("base.url deve essere un URL HTTP/HTTPS assoluto");
+        }
     }
 }
 
