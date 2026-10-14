@@ -104,10 +104,20 @@ public final class ConfigReader {
         getBoolean("playwright.trace.enabled");
         getBoolean("playwright.video.enabled");
         getBoolean("playwright.screenshot.enabled");
-        URI baseUrl = URI.create(get("base.url"));
+        validateUrl("base.url");
+        validateUrl("api.base.url");
+    }
+
+    private static void validateUrl(String key) {
+        URI baseUrl;
+        try {
+            baseUrl = URI.create(get(key));
+        } catch (IllegalArgumentException failure) {
+            throw new IllegalArgumentException(key + " deve essere un URL HTTP/HTTPS assoluto", failure);
+        }
         if (baseUrl.getHost() == null || !("https".equalsIgnoreCase(baseUrl.getScheme())
                 || "http".equalsIgnoreCase(baseUrl.getScheme()))) {
-            throw new IllegalArgumentException("base.url deve essere un URL HTTP/HTTPS assoluto");
+            throw new IllegalArgumentException(key + " deve essere un URL HTTP/HTTPS assoluto");
         }
     }
 }

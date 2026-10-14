@@ -78,9 +78,7 @@ public class HomePage {
 
         page.waitForResponse(
                 currentResponse ->
-                        currentResponse.url().equals(
-                                "https://api.practicesoftwaretesting.com/products"
-                        )
+                        isProductsResponse(currentResponse)
                                 && currentResponse.status() == 200,
                 () -> page.navigate(url)
         );
@@ -227,8 +225,7 @@ public class HomePage {
         Response response =
                 page.waitForResponse(
                         currentResponse ->
-                                currentResponse.url()
-                                        .endsWith("/products")
+                                isProductsResponse(currentResponse)
                                         && currentResponse.status() == 200,
                         categoria::click
                 );
@@ -253,6 +250,11 @@ public class HomePage {
     // =========================
     // PRIVATE SUPPORT
     // =========================
+
+    private boolean isProductsResponse(Response response) {
+        String endpoint = ConfigReader.get("api.base.url").replaceAll("/+$", "") + "/products";
+        return response.url().split("\\?", 2)[0].equals(endpoint);
+    }
 
     private boolean verificaTestoPerOgniProdotto(String testId) {
 
