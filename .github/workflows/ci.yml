@@ -1,0 +1,66 @@
+name: Framework and E2E tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  framework:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Test framework without browsers
+        run: mvn -B --no-transfer-progress '-Dtest=*Test,!RunCucumberTest' test
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: framework-reports
+          path: target/surefire-reports/
+          retention-days: 14
+
+  e2e:
+    needs: framework
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Compile tests
+        run: mvn -B --no-transfer-progress -DskipTests test-compile
+      - name: Install Chromium and system dependencies
+        run: >-
+          mvn -B --no-transfer-progress org.codehaus.mojo:exec-maven-plugin:3.6.3:java
+          -Dexec.mainClass=com.microsoft.playwright.CLI
+          '-Dexec.args=install --with-deps chromium'
+      - name: Run all E2E scenarios headless
+        run: >-
+          mvn -B --no-transfer-progress -Dtest=RunCucumberTest
+          -Dbrowser.name=chromium -Dbrowser.headless=true test
+      - name: Upload diagnostics even after test failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-diagnostics
+          retention-days: 14
+          path: |
+            target/surefire-reports/
+            target/allure-results/
+            target/artifacts/
+            target/logs/
