@@ -33,7 +33,9 @@ class ConfigReaderTest {
     @CsvSource({"browser.name,safari", "browser.timeout,0", "browser.timeout,-1",
             "browser.timeout,abc", "browser.headless,tru", "playwright.video.enabled,yes",
             "playwright.trace.enabled,yes", "playwright.screenshot.enabled,yes",
-            "base.url,/relative", "base.url,ftp://example.com"})
+            "base.url,/relative", "base.url,ftp://example.com",
+            "api.base.url,/relative", "api.base.url,ftp://example.com",
+            "api.base.url,http://", "api.base.url,http://bad host"})
     void rejectsInvalidConfiguration(String key, String value) {
         withProperty(key, value, () -> assertThrows(IllegalArgumentException.class, ConfigReader::validate));
     }
@@ -41,6 +43,33 @@ class ConfigReaderTest {
     @Test
     void acceptsValidOverrides() {
         withProperty("browser.name", "FIREFOX", ConfigReader::validate);
+        withProperty("api.base.url", "http://localhost:8091", ConfigReader::validate);
+    }
+
+    @Test
+    void ciConfigurationUsesLocalApplicationAndHeadlessChromium() {
+        var ci = ConfigReader.loadProperties("ci");
+        assertAll(
+                () -> assertEquals("http://localhost:4200", ci.getProperty("base.url")),
+                () -> assertEquals("http://localhost:8091", ci.getProperty("api.base.url")),
+                () -> assertEquals("chromium", ci.getProperty("browser.name")),
+                () -> assertEquals("true", ci.getProperty("browser.headless"))
+        );
+    }
+
+    @Test
+    void qaConfigurationKeepsPublicApplicationAndApi() {
+        var qa = ConfigReader.loadProperties("qa");
+        assertEquals("https://practicesoftwaretesting.com", qa.getProperty("base.url"));
+        assertEquals("https://api.practicesoftwaretesting.com", qa.getProperty("api.base.url"));
+    }
+
+    @Test
+    void rejectsBlankApiUrlWithPropertyName() {
+        withProperty("api.base.url", " ", () -> {
+            var failure = assertThrows(IllegalArgumentException.class, ConfigReader::validate);
+            assertTrue(failure.getMessage().contains("api.base.url"));
+        });
     }
 
     private void withProperty(String key, String value, Runnable assertion) {

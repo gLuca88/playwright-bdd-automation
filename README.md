@@ -124,6 +124,8 @@ Cartelle e classi chiave:
 
 ```text
 .github/
+  scripts/
+    application.sh
   workflows/
     ci.yml
 pom.xml
@@ -168,6 +170,8 @@ src/
       lifecycle/
         ScenarioLifecycle.java
         ScenarioLifecycleTest.java
+      pages/
+        HomePageTest.java
       runner/
         RunCucumberTest.java
       steps/
@@ -182,6 +186,7 @@ src/
     resources/
       allure.properties
       config-qa.properties
+      config-ci.properties
       log4j2.xml
       features/
         e2e/
@@ -209,11 +214,12 @@ Questa utility è usata nelle step di `ContactSteps` per caricare dati validi e 
 
 Il caricamento della configurazione è gestito da `ConfigReader`. Per impostazione predefinita viene utilizzato l'environment `qa` (se non viene specificato `-Denv=...`). I file di configurazione sono `src/test/resources/config-<env>.properties`.
 
-Proprietà principali (presenti in `config-qa.properties`):
+Proprietà principali dei file di configurazione:
 
 | Proprietà | Descrizione | Valori |
 |---|---|---|
 | `base.url` | URL base dell'applicazione sotto test | es. `https://practicesoftwaretesting.com` |
+| `api.base.url` | URL base dell'API, usato dalle attese delle risposte prodotti in `HomePage` | es. `https://api.practicesoftwaretesting.com` |
 | `browser.name` | Browser da utilizzare | `chromium` (altre opzioni previste: `firefox`, `webkit`) |
 | `browser.headless` | Esecuzione in headless o meno | `true` / `false` |
 | `browser.timeout` | Timeout di default per Playwright (ms) | intero maggiore di zero (default QA: 30000) |
@@ -225,17 +231,28 @@ Selezione dell'environment: passare `-Denv=<environment>` a Maven. Valore di def
 
 Esempio: `mvn test -Denv=qa`.
 
-L'ambiente viene scelto al primo caricamento di `ConfigReader`. Al momento è
-versionato soltanto `config-qa.properties`: per aggiungere un ambiente serve il
-corrispondente file nel classpath dei test.
+L'ambiente viene scelto al primo caricamento di `ConfigReader`. Sono presenti
+due configurazioni nel classpath dei test:
+
+| Ambiente | Frontend | API | Browser |
+|---|---|---|---|
+| `qa` (default) | `https://practicesoftwaretesting.com` | `https://api.practicesoftwaretesting.com` | Chromium con finestra visibile |
+| `ci` | `http://localhost:4200` | `http://localhost:8091` | Chromium headless |
 
 Per le proprietà applicative, la precedenza è: proprietà JVM `-Dchiave=valore`,
 poi file dell'ambiente, poi eventuale default per i metodi che lo prevedono.
 Un valore obbligatorio vuoto viene rifiutato. `validate()` controlla browser
-supportato, timeout positivo, booleani e `base.url` HTTP/HTTPS assoluto.
+supportato, timeout positivo, booleani e URL HTTP/HTTPS assoluti per `base.url`
+e `api.base.url`.
 
 Nel file QA, Chromium è il browser predefinito, headless è disabilitato e tutti
-gli artefatti sono abilitati. La pipeline sovrascrive browser e headless.
+gli artefatti sono abilitati. La pipeline seleziona `ci` tramite `-Denv=ci`;
+anche in questo ambiente trace, video e screenshot sono abilitati.
+
+`HomePage` costruisce l'endpoint `/products` da `api.base.url` e lo usa sia nella
+navigazione iniziale sia nella selezione della categoria con intercettazione
+della risposta. Il confronto accetta query string e uno slash finale nella base
+API; verifica l'endpoint configurato e lo stato HTTP `200`.
 
 ## Esecuzione dei test
 
@@ -255,17 +272,18 @@ Esecuzione dei soli test del framework:
 mvn "-Dtest=*Test,!RunCucumberTest" test
 ```
 
-Esecuzione della suite E2E completa con override headless, come nel workflow CI:
+Esecuzione della suite E2E completa sull'ambiente Docker già avviato, come nel workflow CI:
 
 ```powershell
-mvn "-Dtest=RunCucumberTest" "-Dbrowser.name=chromium" "-Dbrowser.headless=true" test
+mvn "-Dtest=RunCucumberTest" "-Denv=ci" test
 ```
 
 ## Test dei componenti del framework
 
 | Classe | Comportamenti verificati |
 |---|---|
-| `ConfigReaderTest` | Caricamento QA, file mancante, override JVM, valori vuoti, browser/timeout/booleani/URL non validi. |
+| `ConfigReaderTest` | Caricamento QA e CI, file mancante, override JVM, valori vuoti, browser/timeout/booleani/URL frontend e API non validi. |
+| `HomePageTest` | Selezione delle risposte dall'API configurata, gestione query string e slash finale, esclusione di endpoint diversi e risposte non riuscite. Usa proxy Java senza browser o rete. |
 | `ScenarioLifecycleTest` | Setup parziale, cleanup dopo errori di screenshot, video, attachment e chiusura, mantenimento dell'errore principale e pulizia dello stato. Usa proxy Java e sostituti dei manager senza avviare browser reali. |
 | `JsonDataReaderTest` | Deserializzazione di un record e gestione di una risorsa JSON mancante. |
 
@@ -279,14 +297,38 @@ limitati a `contents: read`.
 | Job | Esecuzione | Timeout |
 |---|---|---|
 | `framework` | Ubuntu, Java 21, cache Maven; tutti i test Java eccetto `RunCucumberTest`. | 10 minuti |
-| `e2e` | Parte solo se `framework` passa; compila, installa Chromium e dipendenze Linux, esegue l'intera suite `RunCucumberTest` senza filtri sui tag, con `browser.name=chromium` e `browser.headless=true`. | 20 minuti |
+| `e2e` | Parte solo se `framework` passa; prepara l'applicazione Docker, installa Chromium e dipendenze Linux, esegue l'intera suite `RunCucumberTest` senza filtri sui tag con `-Denv=ci`. | 35 minuti |
+
+Il job `e2e` esegue un secondo checkout del repository ufficiale
+[`testsmith-io/practice-software-testing`](https://github.com/testsmith-io/practice-software-testing),
+fissato alla revisione `ae7caecb811dd8952c09d997e69be7cb946ecd44`, in
+`target/application/`. La revisione fissa i sorgenti e i file Docker
+dell'applicazione; le immagini base e le dipendenze restano quelle definite
+dal progetto ufficiale. Il checkout esterno non conserva credenziali Git.
+
+Lo script `.github/scripts/application.sh` incapsula i comandi Docker Compose
+con il project name `framework-ci` e `SPRINT=sprint5`:
+
+1. `start`: costruisce e avvia i servizi ufficiali `mariadb`, `laravel-api`,
+   `web` e `angular-ui`, usando esplicitamente `docker-compose.yml`.
+2. Attende MariaDB, installa le dipendenze Composer, prepara le directory
+   scrivibili Laravel e inizializza il database con migration e seed.
+3. Attende risposte HTTP riuscite da API (`/status`) e frontend prima dei test.
+4. `logs`: raccoglie stato e log dei container in `target/docker-logs/`.
+5. `stop`: arresta il progetto Compose e rimuove i suoi volumi temporanei.
+
+L'avvio applicativo ha un timeout di 20 minuti e l'esecuzione E2E di 10 minuti.
+I test Java girano direttamente nel runner Ubuntu e raggiungono i servizi Docker
+tramite le porte locali `4200` e `8091`. La CI usa quindi frontend, API e database
+dell'istanza dedicata, anziché il sito pubblico. I comandi `logs` e `stop` sono
+configurati con `if: always()` per essere tentati anche in caso di errore.
 
 Ogni job tenta l'upload dei file disponibili anche dopo un fallimento, grazie a
 `if: always()`. La conservazione è di 14 giorni:
 
 - `framework-reports`: `target/surefire-reports/`;
 - `e2e-diagnostics`: `target/surefire-reports/`, `target/allure-results/`,
-  `target/artifacts/` e `target/logs/`.
+  `target/artifacts/`, `target/logs/` e `target/docker-logs/`.
 
 Il workflow esegue la fase Maven `test` e conserva i risultati Allure come
 artefatti. La generazione HTML è gestita separatamente dal plugin Maven Allure.
@@ -352,4 +394,5 @@ Il framework attuale dimostra un'architettura BDD in Java con Playwright, organi
 - Feature E2E per catalogo, dettaglio prodotto, categorie e modulo `Contact`
 - Test del framework per configurazione, lifecycle e lettura JSON
 - Pipeline GitHub Actions con suite E2E completa in headless e raccolta degli artefatti
+- Ambiente CI Docker dedicato con frontend, API e database ufficiali, separato dalla configurazione QA pubblica
 - Un set di test Cucumber coerente con la struttura attuale del codice e delle risorse
