@@ -34,7 +34,7 @@ jobs:
   e2e:
     needs: framework
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
@@ -44,15 +44,31 @@ jobs:
           cache: maven
       - name: Compile tests
         run: mvn -B --no-transfer-progress -DskipTests test-compile
+      - name: Checkout official application at a fixed revision
+        uses: actions/checkout@v6
+        with:
+          repository: testsmith-io/practice-software-testing
+          ref: ae7caecb811dd8952c09d997e69be7cb946ecd44
+          path: target/application
+          persist-credentials: false
+      - name: Start Docker application and initialize database
+        timeout-minutes: 20
+        run: bash .github/scripts/application.sh start
       - name: Install Chromium and system dependencies
         run: >-
           mvn -B --no-transfer-progress org.codehaus.mojo:exec-maven-plugin:3.6.3:java
           -Dexec.mainClass=com.microsoft.playwright.CLI
           '-Dexec.args=install --with-deps chromium'
       - name: Run all E2E scenarios headless
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
         run: >-
           mvn -B --no-transfer-progress -Dtest=RunCucumberTest
-          -Dbrowser.name=chromium -Dbrowser.headless=true test
+          -Denv=ci test
+      - name: Collect Docker logs
+        if: always()
+        run: bash .github/scripts/application.sh logs
       - name: Upload diagnostics even after test failures
         if: always()
         uses: actions/upload-artifact@v7
@@ -64,3 +80,7 @@ jobs:
             target/allure-results/
             target/artifacts/
             target/logs/
+            target/docker-logs/
+      - name: Stop Docker application
+        if: always()
+        run: bash .github/scripts/application.sh stop
