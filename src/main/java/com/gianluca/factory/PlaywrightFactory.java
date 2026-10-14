@@ -12,6 +12,7 @@ import com.microsoft.playwright.Playwright;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 public final class PlaywrightFactory {
 
@@ -38,7 +39,7 @@ public final class PlaywrightFactory {
     private static IBrowserFactory getBrowserFactory() {
 
         String browserName =
-                ConfigReader.get("browser.name").toLowerCase();
+                ConfigReader.get("browser.name").toLowerCase(Locale.ROOT);
 
         return switch (browserName) {
             case "chromium" -> new ChromiumBrowserFactory();
@@ -73,9 +74,16 @@ public final class PlaywrightFactory {
         BrowserContext context =
                 browser.newContext(options);
 
-        context.setDefaultTimeout(
-                ConfigReader.getInt("browser.timeout")
-        );
+        try {
+            context.setDefaultTimeout(ConfigReader.getInt("browser.timeout"));
+        } catch (RuntimeException | Error failure) {
+            try {
+                context.close();
+            } catch (RuntimeException | Error closeFailure) {
+                if (failure != closeFailure) failure.addSuppressed(closeFailure);
+            }
+            throw failure;
+        }
 
         return context;
     }
